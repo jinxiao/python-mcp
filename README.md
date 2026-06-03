@@ -138,6 +138,10 @@ git tag v0.1.0
 git push origin v0.1.0
 ```
 
+The package version is derived from the git tag by `hatch-vcs`. For example,
+tag `v0.1.0` builds `python_mcp-0.1.0-py3-none-any.whl`, and tag `v0.1.1`
+builds `python_mcp-0.1.1-py3-none-any.whl`.
+
 The workflow runs tests, builds `dist/*.whl` and `dist/*.tar.gz`, then attaches
 them to the GitHub Release for the tag.
 
