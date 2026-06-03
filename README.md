@@ -6,13 +6,51 @@ The package includes normal reusable classes, such as AWS STS helpers and email
 helpers. The MCP server lives beside the library and uses Griffe at startup to
 inspect public classes and methods, then exposes an indexed catalog to Codex.
 
-## Run the MCP server
+## Install from GitHub Release
+
+Download and install the wheel from a GitHub Release:
+
+```powershell
+uv tool install https://github.com/jinxiao/python-mcp/releases/download/v0.1.0/python_mcp-0.1.0-py3-none-any.whl
+```
+
+After installation, the MCP server command is available as:
+
+```powershell
+python_mcp
+```
+
+To upgrade to a newer release, install the newer wheel with `--force`:
+
+```powershell
+uv tool install --force https://github.com/jinxiao/python-mcp/releases/download/v0.1.1/python_mcp-0.1.1-py3-none-any.whl
+```
+
+To uninstall:
+
+```powershell
+uv tool uninstall python-mcp
+```
+
+GitHub Release is not a Python package index, so bare `uvx python_mcp` is not
+the right install model for release assets. Use `uv tool install` once, then
+configure MCP clients to run the installed `python_mcp` command.
+
+## Run locally during development
+
+From this repository root:
 
 ```powershell
 uv run python -m python_mcp.mcp_server
 ```
 
-Codex MCP configuration:
+This repository is an installable Python package with a `src` layout. For local
+development, the important part is that the MCP client starts the command from
+this repository root, either by setting `cwd` or by passing `--directory` to
+`uv`. If the client cannot find `uv` from its `PATH`, replace `"uv"` with the
+absolute path to `uv.exe`.
+
+Codex MCP configuration for local development:
 
 ```json
 {
@@ -21,6 +59,61 @@ Codex MCP configuration:
   "cwd": "C:\\Users\\admin\\python-mcp"
 }
 ```
+
+## Configure GitHub Copilot in VS Code
+
+VS Code stores MCP servers in an `mcp.json` file. After installing the tool,
+create `.vscode/mcp.json` in your workspace or open the user-level file with
+`MCP: Open User Configuration`:
+
+```json
+{
+  "servers": {
+    "pythonMcp": {
+      "type": "stdio",
+      "command": "python_mcp"
+    }
+  }
+}
+```
+
+After saving the file, use `MCP: List Servers` to start, stop, restart, or
+inspect the server.
+
+## Configure OpenCode
+
+OpenCode stores MCP servers under the `mcp` key in `opencode.json` or
+`opencode.jsonc`. After installing the tool, add this server to the config file
+you use for OpenCode:
+
+```jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "pythonMcp": {
+      "type": "local",
+      "command": ["python_mcp"],
+      "enabled": true
+    }
+  }
+}
+```
+
+After changing the config, restart the MCP server or the client session so the
+tool catalog is rebuilt.
+
+## Publish a GitHub Release
+
+The release workflow builds and uploads package artifacts when you push a
+version tag:
+
+```powershell
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+The workflow runs tests, builds `dist/*.whl` and `dist/*.tar.gz`, then attaches
+them to the GitHub Release for the tag.
 
 ## Configure scanning
 
