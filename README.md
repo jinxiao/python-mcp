@@ -36,6 +36,32 @@ GitHub Release is not a Python package index, so bare `uvx python_mcp` is not
 the right install model for release assets. Use `uv tool install` once, then
 configure MCP clients to run the installed `python_mcp` command.
 
+## Add as an application dependency
+
+`uv tool install` installs the MCP command in an isolated tool environment. It
+does not make `python_mcp` importable from every Python project.
+
+If application code imports this SDK directly, add the package to that
+application's environment:
+
+```powershell
+uv add git+https://github.com/jinxiao/python-mcp.git@v0.1.0
+```
+
+Or install the release wheel as a project dependency:
+
+```powershell
+uv add "python-mcp @ https://github.com/jinxiao/python-mcp/releases/download/v0.1.0/python_mcp-0.1.0-py3-none-any.whl"
+```
+
+Then import the Python package with the underscore name:
+
+```python
+from python_mcp import AwsStsClient, EmailClient
+from python_mcp.aws_sts import AwsStsClient
+from python_mcp.emailer import EmailClient
+```
+
 ## Run locally during development
 
 From this repository root:
@@ -143,6 +169,10 @@ The default MCP server exposes a small fixed toolset:
 Treat this package as a normal Python SDK. MCP is the searchable API catalog
 that helps agents find the right SDK method, inspect its signature, and generate
 ordinary application code.
+
+For code generation, the target application must depend on `python-mcp` through
+`uv add`, `pip install`, or an equivalent package manager command. Installing
+the MCP command with `uv tool install` only configures the MCP server runtime.
 
 Application code should import the library directly:
 
